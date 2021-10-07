@@ -25,25 +25,31 @@ export class AppComponent implements OnInit, OnDestroy {
     });
 
     this.isFetching = true;
-    this.postsService.fetchPosts().subscribe(
-      posts => {
-        this.isFetching = false;
-        this.loadedPosts = posts;
-      },
-      error => {
-        this.error = error.message;
-      }
-    );
+    this.fetchPosts();
   }
 
   onCreatePost(postData: Post) {
     // Send Http request
-    this.postsService.createAndStorePost(postData);
+    this.postsService.addPost(postData).subscribe(
+      () => this.fetchPosts(),
+      (error) => this.error = error
+    );
   }
 
   onFetchPosts() {
     // Send Http request
     this.isFetching = true;
+    this.fetchPosts();
+  }
+
+  onClearPosts() {
+    // Send Http request
+    this.postsService.deletePosts().subscribe(() => {
+      this.loadedPosts = [];
+    });
+  }
+
+  fetchPosts() {
     this.postsService.fetchPosts().subscribe(
       posts => {
         this.isFetching = false;
@@ -54,13 +60,6 @@ export class AppComponent implements OnInit, OnDestroy {
         console.log(error);
       }
     );
-  }
-
-  onClearPosts() {
-    // Send Http request
-    this.postsService.deletePosts().subscribe(() => {
-      this.loadedPosts = [];
-    });
   }
 
   ngOnDestroy() {

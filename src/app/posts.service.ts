@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
-import { Subject, throwError } from 'rxjs';
+import { Observable, Subject, throwError } from 'rxjs';
 
 import { Post } from './post.model';
 
@@ -12,23 +12,15 @@ export class PostsService {
 
   constructor(private http: HttpClient) {}
 
-  createAndStorePost(postData: Post) {
-    this.http
+  addPost(postData: Post): Observable<any> {
+    return this.http
       .post<{ name: string }>(
         this.API_END_POINT,
         postData
       )
-      .subscribe(
-        responseData => {
-          console.log(responseData);
-        },
-        error => {
-          this.error.next(error.message);
-        }
-      );
   }
 
-  fetchPosts() {
+  fetchPosts(): Observable<any> {
     return this.http
       .get<{ [key: string]: Post }>(
        this.API_END_POINT
@@ -50,7 +42,7 @@ export class PostsService {
       );
   }
 
-  deletePosts() {
+  deletePosts(): Observable<any> {
     return this.http.delete(
       this.API_END_POINT
     );
